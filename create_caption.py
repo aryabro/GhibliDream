@@ -5,7 +5,6 @@ from PIL import Image
 
 # Configure the Gemini API
 # GOOGLE_API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
-GOOGLE_API_KEY = "TODO"  # Replace with your actual API key
 
 # generate api key here https://ai.google.dev/gemini-api/docs/quickstart?lang=python#make-first-request
 genai.configure(api_key=GOOGLE_API_KEY)
