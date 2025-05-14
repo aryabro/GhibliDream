@@ -5,6 +5,7 @@ from PIL import Image
 
 # Configure the Gemini API
 # GOOGLE_API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
+GOOGLE_API_KEY = "TODO"  # Replace with your actual API key
 
 # generate api key here https://ai.google.dev/gemini-api/docs/quickstart?lang=python#make-first-request
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -12,7 +13,7 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Initialize the Gemini Pro Vision model
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-def generate_caption(image_path, prompt="Describe this image in detail"):
+def generate_caption(image_path, prompt="Describe this image in detail", prefix=""):
     """Generate a caption for the given image using Gemini Pro Vision."""
     try:
         # Load the image
@@ -23,12 +24,12 @@ def generate_caption(image_path, prompt="Describe this image in detail"):
         
         # Extract the caption text
         caption = response.text
-        return caption
+        return prefix + " " + caption
     except Exception as e:
         print(f"Error processing {image_path}: {str(e)}")
         return None
 
-def process_directory(directory_path, prompt="Describe this image in detail"):
+def process_directory(directory_path, prompt="Describe this image in detail", prefix=""):
     """Process all images in the directory and create caption files."""
     # Supported image extensions
     image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
@@ -42,7 +43,7 @@ def process_directory(directory_path, prompt="Describe this image in detail"):
             print(f"Processing {image_path.name}...")
             
             # Generate caption
-            caption = generate_caption(image_path, prompt)
+            caption = generate_caption(image_path, prompt, prefix)
             
             if caption:
                 # Create caption file with same name but .txt extension
@@ -57,8 +58,8 @@ def process_directory(directory_path, prompt="Describe this image in detail"):
 if __name__ == "__main__":
     # Hardcoded directory path
     image_directory = "images"  # Replace with your actual directory path
-    prompt = "Describe this image in detail"
+    prompt = "Describe this image in detail. Be specific, just describe the image, don't add any other text. make the sentences as a paragraph no newlines"
     
     
     # Process the directory
-    process_directory(image_directory, prompt)
+    process_directory(image_directory, prompt, prefix="gh1b11")
