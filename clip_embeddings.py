@@ -8,6 +8,9 @@ def _load_model_and_processor(model_name: str, model=None, processor=None):
         try:
             loaded_model = CLIPModel.from_pretrained(model_name)
             loaded_processor = CLIPProcessor.from_pretrained(model_name)
+            if torch.cuda.is_available():
+                device = torch.device("cuda")
+                loaded_model.to(device)
             return loaded_model, loaded_processor
         except Exception as e:
             print(f"Error loading model or processor ({model_name}): {e}")
@@ -23,6 +26,9 @@ def _load_dinov2_model_and_processor(model_name: str, model=None, processor=None
         try:
             loaded_processor = AutoImageProcessor.from_pretrained(model_name)
             loaded_model = AutoModel.from_pretrained(model_name)
+            if torch.cuda.is_available():
+                device = torch.device("cuda")
+                loaded_model.to(device)
             return loaded_model, loaded_processor
         except Exception as e:
             print(f"Error loading DINOv2 model or processor ({model_name}): {e}")
@@ -175,13 +181,11 @@ def get_dinov2_image_embeddings(
             outputs = model(**inputs)
         
         # DINOv2 typically returns 'last_hidden_state'.
-        # We can take the CLS token embedding (if available and model is configured for it)
-        # or mean pool the patch embeddings. For simplicity, let's mean pool.
+        # We will take the CLS token embedding, which is the first token in the sequence.
         # The output shape is (batch_size, sequence_length, hidden_size)
-        # sequence_length includes CLS token + patch tokens for ViT models
         last_hidden_state = outputs.last_hidden_state
-        # Mean pool over the sequence_length dimension (dim=1)
-        embeddings = last_hidden_state.mean(dim=1)
+        # CLS token is at index 0 of the sequence_length dimension
+        embeddings = last_hidden_state[:, 0]
         
         return embeddings
     except Exception as e:
@@ -212,19 +216,17 @@ if __name__ == "__main__":
     print(f"\nProcessing texts: {sample_texts}")
     text_embeds = get_clip_text_embeddings(sample_texts)
     if text_embeds is not None:
-        print("\nText Embeddings:")
-        print(text_embeds)
+        print("\nText Embeddings (CLIP):")
         print(f"Shape: {text_embeds.shape}")
 
     print(f"\nProcessing images: {sample_image_paths}")
     img_embeds = get_clip_image_embeddings(sample_image_paths)
     if img_embeds is not None:
         print("\nImage Embeddings (CLIP):")
-        print(img_embeds)
         print(f"Shape: {img_embeds.shape}")
 
-    # Example with pre-loading model and processor
-    print("\n--- Example with pre-loaded model/processor ---")
+    # Example with pre-loading model and processor for CLIP
+    print("\n--- Example with pre-loaded CLIP model/processor ---")
     model_id = "openai/clip-vit-base-patch32"
     try:
         shared_model = CLIPModel.from_pretrained(model_id)
@@ -233,14 +235,13 @@ if __name__ == "__main__":
         # Optional: Move model to GPU if available
         device = "cuda" if torch.cuda.is_available() else "cpu"
         shared_model.to(device)
-        print(f"Using device: {device}")
+        print(f"Using CLIP device: {device}")
 
         text_embeds_shared = get_clip_text_embeddings(
             sample_texts, model=shared_model, processor=shared_processor
         )
         if text_embeds_shared is not None:
-            print("\nText Embeddings (pre-loaded model):")
-            print(text_embeds_shared)
+            print("\nText Embeddings (CLIP pre-loaded model):")
             print(f"Shape: {text_embeds_shared.shape}")
 
         img_embeds_shared = get_clip_image_embeddings(
@@ -248,7 +249,6 @@ if __name__ == "__main__":
         )
         if img_embeds_shared is not None:
             print("\nImage Embeddings (CLIP pre-loaded model):")
-            print(img_embeds_shared)
             print(f"Shape: {img_embeds_shared.shape}")
 
     except Exception as e:
@@ -261,7 +261,6 @@ if __name__ == "__main__":
         dinov2_embeds = get_dinov2_image_embeddings(dummy_image_files)
         if dinov2_embeds is not None:
             print("\nImage Embeddings (DINOv2):")
-            print(dinov2_embeds)
             print(f"Shape: {dinov2_embeds.shape}")
 
         # Example with pre-loading DINOv2 model and processor
@@ -272,9 +271,9 @@ if __name__ == "__main__":
             shared_dinov2_model = AutoModel.from_pretrained(dinov2_model_id)
 
             # Optional: Move model to GPU if available
-            # device_dino = "cuda" if torch.cuda.is_available() else "cpu"
-            # shared_dinov2_model.to(device_dino)
-            # print(f"Using DINOv2 device: {device_dino}")
+            device_dino = "cuda" if torch.cuda.is_available() else "cpu"
+            shared_dinov2_model.to(device_dino)
+            print(f"Using DINOv2 device: {device_dino}")
 
             dinov2_embeds_shared = get_dinov2_image_embeddings(
                 dummy_image_files, 
@@ -283,7 +282,6 @@ if __name__ == "__main__":
             )
             if dinov2_embeds_shared is not None:
                 print("\nImage Embeddings (DINOv2 pre-loaded model):")
-                print(dinov2_embeds_shared)
                 print(f"Shape: {dinov2_embeds_shared.shape}")
 
         except Exception as e:
