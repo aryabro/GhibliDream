@@ -1,24 +1,16 @@
 # GhibliDream: Fine-Tuning Diffusion Models in Ghibli Style
 
-GhibliDream: Fine-Tuning Diffusion
-Models in Ghibli Style
-Members: Aditya Potnis, Aryaman Nasare, Kartik Ramesh, Ridhwik Shravan Kalgaonkar
-NetIDs: apotnis2, nasare2, kartikr2, rk44
-Text-to-image diffusion models like Stable Diffusion demonstrate impressive generalization
-across diverse visual concepts. However, they often struggle to consistently replicate niche
-artistic styles such as the hand-painted aesthetic of Studio Ghibli. Training such models from
-scratch is computationally infeasible. In this project, we investigate lightweight fine-tuning
-approaches, specifically DreamBooth, LoRA, and full-parameter finetuning—to adapt
-pre-trained diffusion models using small, curated datasets.
-After comparing the trade-offs across these methods, we focus on DreamBooth due to its
-effectiveness in few-shot adaptation and low compute requirements. We curated Ghibli-style
-image-caption pairs into task-specific subsets, manually enhancing captions for stylistic
-alignment. Our evaluations combine qualitative analysis and embedding-based similarity metrics
+GhibliDream: Fine-Tuning Diffusion Models in Ghibli Style
+Contributors: Aditya Potnis, Aryaman Nasare, Kartik Ramesh, Ridhwik Shravan Kalgaonkar
+
+Text-to-image diffusion models like Stable Diffusion demonstrate impressive generalization across diverse visual concepts. However, they often struggle to consistently replicate niche
+artistic styles such as the hand-painted aesthetic of Studio Ghibli. Training such models from scratch is computationally infeasible. In this project, we investigate lightweight fine-tuning
+approaches, specifically DreamBooth, LoRA, and full-parameter finetuning—to adapt pre-trained diffusion models using small, curated datasets.
+After comparing the trade-offs across these methods, we focus on DreamBooth due to its effectiveness in few-shot adaptation and low compute requirements. We curated Ghibli-style
+image-caption pairs into task-specific subsets, manually enhancing captions for stylistic alignment. Our evaluations combine qualitative analysis and embedding-based similarity metrics
 (CLIP, DINOv2) to assess the visual fidelity and semantic consistency of outputs.
-We observe that DreamBooth enables robust stylization while preserving base model
-capabilities. Experiments with unique token identifiers, sampling configurations, and multi-stage
-fine-tuning show that style consistency and subject-background blending can be significantly
-improved through careful prompt engineering and dataset composition.
+We observe that DreamBooth enables robust stylization while preserving base model capabilities. Experiments with unique token identifiers, sampling configurations, and multi-stage
+fine-tuning show that style consistency and subject-background blending can be significantly improved through careful prompt engineering and dataset composition.
 image here
 
 1. Introduction
